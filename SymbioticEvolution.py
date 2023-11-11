@@ -1,5 +1,7 @@
 import numpy as np
 
+np.random.seed(seed=65)
+
 # ハイパーパラメータ
 WPOP_SIZE = 200
 PPOP_SIZE = 200
@@ -25,14 +27,13 @@ class PartialPopulation:
             individual = PartialIndividual()
             self.population.append(individual)
 
-
 # 全体解個体
 class WholeIndividual:
     def __init__(self):
         self.chrom = []
         for _ in range(WCHROM_LEN):
             index = np.random.randint(0, PPOP_SIZE)
-            self.chrom.append(ppop.population[index].chrom)
+            self.chrom.append(ppop.population[index])
 
         self.fitness = 1000000
 
@@ -44,8 +45,17 @@ class WholePopulation:
             individual = WholeIndividual()
             self.population.append(individual)
 
+# floyd問題
 def evaluate_fitness():
-    print(wpop.population[0].chrom[0][0])
+    for i in range(WPOP_SIZE):
+        fitness = 0.0
+        for j in range(WCHROM_LEN):
+            for k in range(PCHROM_LEN):
+                fitness += (wpop.population[i].chrom[j].chrom[k] * 2 - 1) * np.sqrt(j*PCHROM_LEN+k+1)
+        wpop.population[i].fitness = np.abs(fitness)
+        for j in range(WCHROM_LEN):
+            if wpop.population[i].chrom[j].fitness > wpop.population[i].fitness:
+                wpop.population[i].chrom[j].fitness = wpop.population[i].fitness
 
 #初期化
 ppop = PartialPopulation()
