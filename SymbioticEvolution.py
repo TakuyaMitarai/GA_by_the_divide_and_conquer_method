@@ -1,15 +1,15 @@
 import numpy as np
 
 # ハイパーパラメータ
-WPOP_SIZE = 100
-PPOP_SIZE = 100
+WPOP_SIZE = 140
+PPOP_SIZE = 280
 MAX_GENERATION = 800
-WCROSSOVER_PROB = 0.01
+WCROSSOVER_PROB = 0.1
 PCROSSOVER_PROB = 0.8
-WMUTATE_PROB = 0.05
-PMUTATE_PROB = 0.05
-WCHROM_LEN = 8
-PCHROM_LEN = 8
+WMUTATE_PROB = 0.01
+PMUTATE_PROB = 0.01
+WCHROM_LEN = 20
+PCHROM_LEN = 5
 
 # 部分解個体
 class PartialIndividual:
@@ -75,7 +75,7 @@ class WholeIndividual:
             self.chrom[i] = parent1.chrom[i]
         for i in range(index1, index2):
             self.chrom[i] = parent2.chrom[i]
-        for i in range(index2, PCHROM_LEN):
+        for i in range(index2, WCHROM_LEN):
             self.chrom[i] = parent1.chrom[i]
         self.mutate()
     
@@ -103,7 +103,7 @@ class WholePopulation:
             self.population[i].crossover(self.population[parent1], self.population[parent2], index1, index2)
 
     def evainit(self):
-        for i in range(PPOP_SIZE):
+        for i in range(WPOP_SIZE):
             self.population[i].fitness = 1000000
 
 # floyd問題
@@ -125,9 +125,11 @@ ppop = PartialPopulation()
 wpop = WholePopulation()
 evaluate_fitness()
 
+best = []
 # 世代交代
 for i in range(MAX_GENERATION):
     print(f"第{i+1}世代 最良個体適応度: {wpop.population[0].fitness}")
+    best.append(wpop.population[0].fitness)
     # 交叉
     ppop.crossover()
     wpop.crossover()

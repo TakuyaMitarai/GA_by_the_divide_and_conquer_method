@@ -1,1 +1,4 @@
 # SymbioticEvolution_for_Python
+
+Symbiotic Evolution(共生進化)は分割統治法に基づく二集団遺伝的アルゴリズムです。
+pythonでのサンプル実装です。サンプル問題としてFloyd問題を扱っています。
