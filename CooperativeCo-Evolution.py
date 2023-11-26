@@ -2,12 +2,12 @@ import numpy as np
 
 # ハイパーパラメータ
 WPOP_SIZE = 200
-PPOP_SIZE = 400
+PPOP_SIZE = 200
 MAX_GENERATION = 1000
-WCROSSOVER_PROB = 0.5
-PCROSSOVER_PROB = 0.9
+WCROSSOVER_PROB = 0.0
+PCROSSOVER_PROB = 0.99
 WMUTATE_PROB = 0.01
-PMUTATE_PROB = 0.04
+PMUTATE_PROB = 0.005
 WCHROM_LEN = 10
 PCHROM_LEN = 10
 
@@ -61,9 +61,9 @@ class PartialPopulation:
 class WholeIndividual:
     def __init__(self):
         self.chrom = []
-        for _ in range(WCHROM_LEN):
+        for i in range(WCHROM_LEN):
             index = np.random.randint(0, PPOP_SIZE)
-            self.chrom.append(ppop.population[index])
+            self.chrom.append(ppop[i].population[index])
         self.fitness = 1000000
     
     def crossover(self, parent1, parent2, index1, index2):
@@ -83,7 +83,7 @@ class WholeIndividual:
         for i in range(WCHROM_LEN):
             if np.random.rand() < WMUTATE_PROB:
                 index = np.random.randint(0, PPOP_SIZE)
-                self.chrom[i] = ppop.population[index]
+                self.chrom[i] = ppop[i].population[index]
 
 # 全体解集団
 class WholePopulation:
@@ -117,11 +117,15 @@ def evaluate_fitness():
         for j in range(WCHROM_LEN):
             if wpop.population[i].chrom[j].fitness > wpop.population[i].fitness:
                 wpop.population[i].chrom[j].fitness = wpop.population[i].fitness
-    ppop.population.sort(key=lambda individual: individual.fitness)
+    for i in range(WCHROM_LEN):
+        ppop[i].population.sort(key=lambda individual: individual.fitness)
     wpop.population.sort(key=lambda individual: individual.fitness)
 
 # 初期化
-ppop = PartialPopulation()
+ppop = []
+for i in range(WCHROM_LEN):
+    ptmp = PartialPopulation()
+    ppop.append(ptmp)
 wpop = WholePopulation()
 evaluate_fitness()
 
@@ -131,11 +135,13 @@ for i in range(MAX_GENERATION):
     print(f"第{i+1}世代 最良個体適応度: {wpop.population[0].fitness}")
     best.append(wpop.population[0].fitness)
     # 交叉
-    ppop.crossover()
+    for i in range(WCHROM_LEN):
+        ppop[i].crossover()
     wpop.crossover()
 
     # 適応度初期化
-    ppop.evainit()
+    for i in range(WCHROM_LEN):
+        ppop[i].evainit()
     wpop.evainit()
 
     # 適応度算出
